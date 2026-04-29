@@ -6,8 +6,6 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_USER=postgres
       - POSTGRES_DB=moneytracker
-    ports:
-      - 5431:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
