@@ -1,0 +1,45 @@
+services:
+  database:
+    image: postgres:17
+    container_name: database
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=moneytracker
+    ports:
+      - 5431:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    image: money-tracker-backend
+    build: ./backend
+    container_name: backend
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    image: money-tracker-frontend
+    build: ./frontend
+    container_name: frontend
+    command: sh -c "npm run build && serve -s dist -p 3000"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
