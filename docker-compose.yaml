@@ -16,17 +16,24 @@ services:
       start_period: 10s
     restart: unless-stopped
 
-  backend:
-    image: money-tracker-backend
+  database-migration:
     build: ./backend
-    container_name: backend
+    container_name: database-migration
     depends_on:
       database:
         condition: service_healthy
+    restart: "no"
+    command: alembic upgrade head
+
+  backend:
+    build: ./backend
+    container_name: backend
+    depends_on:
+      database-migration:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   frontend:
-    image: money-tracker-frontend
     build: ./frontend
     container_name: frontend
     command: sh -c "npm run build && serve -s dist -p 3000"
