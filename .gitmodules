@@ -1,6 +1,7 @@
 [submodule "frontend"]
 	path = frontend
 	url = git@github.com:antesmd/money-tracker-frontend.git
+
 [submodule "backend"]
 	path = backend
 	url = git@github.com:antesmd/money-tracker-backend.git
